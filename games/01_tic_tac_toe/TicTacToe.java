@@ -1,25 +1,36 @@
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 
 public class TicTacToe{
-    static List<Integer> storeX = new ArrayList<>();
-    static List<Integer> storeO = new ArrayList<>();
+    static Set<Integer> storeX = new HashSet<>();
+    static Set<Integer> storeO = new HashSet<>();
 
-    private static void wins(int[][] board){
-        int[][] possibleSolutions = {
-            {board[0][0], board[0][1], board[0][2]},
-            {board[1][0], board[1][1], board[1][2]},
-            {board[2][0], board[2][1], board[2][2]},
-            {board[0][0], board[1][0], board[2][0]},
-            {board[0][1], board[1][1], board[2][1]},
-            {board[0][2], board[1][2], board[2][2]},
-            {board[0][0], board[1][1], board[2][2]},
-            {board[2][0], board[2][1], board[0][2]}
-        };
+    private static boolean winEngine(char[] currentPlayer){
+        if (storeO.size() < 3 && storeX.size() < 3) return false;
+        Set<Set<Integer>> possibleWins = new HashSet<>();
+        possibleWins.add(Set.of(1, 2, 3));
+        possibleWins.add(Set.of(4, 5, 6));
+        possibleWins.add(Set.of(7, 8, 9));
+        possibleWins.add(Set.of(1, 4, 7));
+        possibleWins.add(Set.of(2, 5, 8));
+        possibleWins.add(Set.of(3, 6, 9));
+        possibleWins.add(Set.of(1, 5, 9));
+        possibleWins.add(Set.of(7, 5, 3));
+
+        if (currentPlayer[0] == 'X'){
+            for(Set<Integer> set : possibleWins){
+                if (storeX.containsAll(set)){
+                    return true;
+                }
+            }
+        } else {
+            for (Set<Integer> set : possibleWins){
+                if (storeO.containsAll(set))
+                    return true;
+            }
+        }
+        return false;
     }
 
     private static void showCurrentBoard(char[][] board){
@@ -111,18 +122,22 @@ public class TicTacToe{
                 System.out.print("Enter move : ");
                 int n = sc.nextInt();
                 if (!validMoves.contains(n)){
-                    System.out.println("Invalid move");
+                    System.out.println("Invalid move, please enter a valid move!");
                     continue;
                 }
                 else {
                     validMoves.remove(n);
                     placeXO(board, currentPlayer[0], n);
-                    changePlayer(currentPlayer);
                     storePlayer(currentPlayer, n);
+                    if (winEngine(currentPlayer)){
+                        System.out.println("Won : " + currentPlayer[0]);
+                        break;
+                    }
+                    changePlayer(currentPlayer);
+                    moves++;
                 }
-                moves++;
             }
         }
-        
+        sc.close();
     }
 }
